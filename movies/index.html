@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1989 vs 1996 Movie Showdown</title>
+<meta name="description" content="Rate the biggest movies of 1989 and 1996. Which year was better?">
+<meta property="og:title" content="1989 vs 1996: Which year had better movies?">
+<meta property="og:description" content="Rate the biggest box office hits of both years. Takes about 15 minutes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: marquee header, sticky year tabs, one column of film cards, fixed submit bar. */
+:root{
+  --bg:#EEF0F4; --surface:#FFFFFF; --ink:#16171D; --muted:#5E6270; --line:#D9DCE4;
+  --y89:#C0266D; --y89-soft:#F8E1EC; --y96:#0F7A86; --y96-soft:#DDF1F3;
+  --chip:#E4E7EE; --ok:#2E7D4F; --err:#B3261E;
+  --display:"Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#111218; --surface:#1B1D25; --ink:#ECEDF2; --muted:#9A9EAD; --line:#2C2F3A;
+  --y89:#F0559A; --y89-soft:#3A1B2A; --y96:#3CC3D0; --y96-soft:#14333A;
+  --chip:#262935; --ok:#5CC487; --err:#FF8A80; color-scheme:dark }}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.marquee{background:var(--ink);color:var(--bg);padding-top:env(safe-area-inset-top,0px)}
+header.marquee .wrap{padding-block:22px 18px;display:grid;gap:10px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,11vw,68px);line-height:.92;margin:0;letter-spacing:.01em}
+h1 .a{color:var(--y89)} h1 .b{color:var(--y96)} h1 .vs{font-weight:700;font-size:.5em;opacity:.6;vertical-align:middle;padding:0 .15em}
+.lede{margin:0;max-width:60ch;opacity:.85;font-size:14px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:6px;padding-block:10px}
+.tab{flex:1;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--body);padding:9px 6px;border-radius:999px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.tab small{font:500 11px var(--mono);color:var(--muted);margin-top:2px}
+.tab[aria-selected="true"][data-tab="1989"]{border-color:var(--y89);background:var(--y89-soft)}
+.tab[aria-selected="true"][data-tab="1996"]{border-color:var(--y96);background:var(--y96-soft)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+main .wrap{padding-block:18px 130px;display:grid;gap:16px}
+.panel{display:grid;gap:12px}
+.intro{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.intro label{font-weight:600;font-size:14px}
+.intro input{width:100%;font:500 16px var(--body);padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.intro input.bad{border-color:var(--err)}
+.legend{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+.legend b{color:var(--ink)}
+.yearhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.yearhead h2{font-family:var(--display);font-weight:900;font-size:38px;margin:0;line-height:1}
+.yearhead p{margin:0;color:var(--muted);font-size:13px}
+.subhead{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 0}
+.film{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:10px;border-left:4px solid var(--line)}
+.film.done{border-left-color:var(--acc)}
+.ftop{display:flex;gap:10px;align-items:flex-start}
+.rank{font:500 12px var(--mono);color:var(--acc);min-width:2.2em;padding-top:3px;font-variant-numeric:tabular-nums}
+.ftitle{flex:1;min-width:0}
+.ftitle h3{margin:0;font-size:16px;font-weight:700;line-height:1.25}
+.ftitle .gross{font:500 11.5px var(--mono);color:var(--muted)}
+.unseenbtn{border:1px solid var(--line);background:transparent;color:var(--muted);font:600 12px var(--body);border-radius:999px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+.unseenbtn[aria-pressed="true"]{background:var(--chip);color:var(--ink);border-color:var(--ink)}
+.row{display:grid;grid-template-columns:5.6em 1fr;align-items:center;gap:8px}
+.row .lbl{font-size:12px;font-weight:600;color:var(--muted);line-height:1.15}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.scale button{height:40px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:600 15px var(--mono);border-radius:8px;cursor:pointer;touch-action:manipulation}
+.scale button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--surface)}
+.scale button:disabled{opacity:.3;cursor:not-allowed}
+.next{justify-self:stretch;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:600 15px var(--body);border-radius:10px;padding:12px;cursor:pointer}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.savebar .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.progress{flex:1;min-width:0;display:grid;gap:4px}
+.progress .txt{font-size:13px;font-weight:600}
+.progress .txt span{color:var(--muted);font-weight:500}
+.meter{height:6px;border-radius:3px;background:var(--chip);overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+.meter .m89{background:var(--y89)} .meter .m96{background:var(--y96)}
+.submit{border:0;background:var(--ink);color:var(--bg);font:700 15px var(--body);border-radius:10px;padding:12px 16px;cursor:pointer;white-space:nowrap}
+.submit:disabled{opacity:.5;cursor:wait}
+.dialog{position:fixed;inset:0;z-index:20;background:rgba(10,10,14,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--ink);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:20px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px));display:grid;gap:12px;max-height:90vh;overflow:auto}
+.sheet h2{font-family:var(--display);font-weight:900;font-size:32px;margin:0;line-height:1}
+.sheet p{margin:0}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.duel div{border-radius:12px;padding:12px;display:grid;gap:2px}
+.duel .d89{background:var(--y89-soft)} .duel .d96{background:var(--y96-soft)}
+.duel b{font-family:var(--display);font-size:34px;line-height:1}
+.duel .d89 b{color:var(--y89)} .duel .d96 b{color:var(--y96)}
+.duel small{font:500 11px var(--mono);color:var(--muted)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);font:600 14px var(--body);border-radius:10px;padding:10px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.err{color:var(--err);font-size:14px}
+textarea.code{width:100%;min-height:80px;font:12px var(--mono);border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink)}
+.method{font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header class="marquee">
+  <div class="wrap">
+    <div class="eyebrow">The great movie-year debate</div>
+    <h1><span class="a">1989</span><span class="vs">vs</span><span class="b">1996</span></h1>
+    <p class="lede">Rate the biggest box office hits of each year on two things: how much the film shaped cinema and the world, and how much it shaped you. Skip anything you haven't seen.</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Year">
+  <div class="wrap" role="tablist">
+    <button class="tab" role="tab" data-tab="1989" id="tab-1989" aria-selected="true">1989<small id="cnt-1989">0/33</small></button>
+    <button class="tab" role="tab" data-tab="1996" id="tab-1996" aria-selected="false">1996<small id="cnt-1996">0/32</small></button>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <section class="intro" id="introBox">
+      <label for="who">Your name</label>
+      <input id="who" type="text" autocomplete="nickname" placeholder="So we know whose ballot this is" maxlength="40">
+      <div class="legend">
+        <div><b>World</b> · impact on cinema and the world at large. 1 = barely a ripple, 5 = changed everything.</div>
+        <div><b>Me</b> · impact on you personally. 1 = meh, 5 = part of who you are.</div>
+        <div>Haven't seen it? Tap "Haven't seen." You can still rate its World impact by reputation. Tap a number again to clear it. Your progress is saved on this phone, so you can come back later.</div>
+      </div>
+    </section>
+    <section class="panel" id="panel-1989" role="tabpanel" aria-labelledby="tab-1989"></section>
+    <section class="panel" id="panel-1996" role="tabpanel" aria-labelledby="tab-1996" hidden></section>
+  </div>
+</main>
+
+<div class="savebar">
+  <div class="wrap">
+    <div class="progress">
+      <div class="txt" id="progTxt">0 of 65 films done</div>
+      <div class="meter"><i class="m89" id="m89" style="width:0%"></i><i class="m96" id="m96" style="width:0%"></i></div>
+    </div>
+    <button class="submit" id="submitBtn" type="button">Submit ballot</button>
+  </div>
+</div>
+
+<div class="dialog" id="dialog" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dlgTitle" id="sheet"></div>
+</div>
+
+<script>
+// ===== Settings =====
+// Ballots are emailed through FormSubmit (formsubmit.co). After the first
+// ballot, FormSubmit emails an activation link; click it once. You can then
+// swap the address below for the random alias FormSubmit gives you.
+const SUBMIT_TO = "paul.beswick@gmail.com";
+
+// [title, gross $M, note]. Late releases are flagged with late:true.
+const FILMS = {
+  "1989": [
+    ["Batman",251.2],["Indiana Jones and the Last Crusade",197.2],["Lethal Weapon 2",147.3],["Honey, I Shrunk the Kids",130.7],
+    ["Rain Man",125.6,"1988 holdover"],["Look Who's Talking",120.4],["Ghostbusters II",112.5],["Back to the Future Part II",103.5],
+    ["Parenthood",100.0],["Dead Poets Society",95.9],["When Harry Met Sally…",92.3],["Turner & Hooch",71.1],
+    ["Uncle Buck",66.8],["Field of Dreams",64.4],["National Lampoon's Christmas Vacation",59.5],["Sea of Love",58.6],
+    ["Pet Sematary",57.5],["Harlem Nights",55.7],["Beaches",54.8,"1988 holdover"],["The Abyss",54.2],
+    ["Star Trek V: The Final Frontier",52.2],["The Little Mermaid",51.1],["Steel Magnolias",50.8],["Major League",49.8],
+    ["See No Evil, Hear No Evil",46.9],["Black Rain",45.9],["Working Girl",45.0,"1988 holdover"],["The War of the Roses",43.8],
+    ["Three Fugitives",40.6],["Bill & Ted's Excellent Adventure",40.5],
+    ["Driving Miss Daisy",106.6,"Dec 1989 release, mostly earned in 1990",true],
+    ["Born on the Fourth of July",70.0,"Dec 1989 release, mostly earned in 1990",true],
+    ["Tango & Cash",63.4,"Dec 1989 release, mostly earned in 1990",true]
+  ],
+  "1996": [
+    ["Independence Day",306.2],["Twister",243.8],["Mission: Impossible",181.0],["The Rock",134.1],
+    ["Ransom",129.2],["The Nutty Professor",128.8],["The Birdcage",124.1],["101 Dalmatians",121.8],
+    ["A Time to Kill",108.8],["The First Wives Club",104.7],["Phenomenon",104.5],["Eraser",101.3],
+    ["The Hunchback of Notre Dame",100.1],["Star Trek: First Contact",89.2],["Space Jam",85.4],["Jerry Maguire",83.3],
+    ["Mr. Holland's Opus",82.5,"1995 holdover"],["Broken Arrow",70.6],["The Cable Guy",60.2],["Courage Under Fire",59.0],
+    ["Jack",58.6],["Jingle All the Way",57.2],["12 Monkeys",56.8,"1995 holdover"],["Executive Decision",56.7],
+    ["Primal Fear",56.1],["Beavis and Butt-Head Do America",54.2],["Tin Cup",53.9],["Sleepers",52.9],
+    ["Michael",52.7],["Dragonheart",51.4],
+    ["Scream",103.0,"Dec 1996 release, mostly earned in 1997",true],
+    ["The English Patient",78.7,"Nov 1996 release, mostly earned in 1997",true]
+  ]
+};
+const YEARS = ["1989","1996"];
+const ACC = {"1989":"var(--y89)","1996":"var(--y96)"};
+const TOTAL = FILMS["1989"].length + FILMS["1996"].length;
+
+let ballot = {name:"", r:{}};
+try { const s = JSON.parse(localStorage.getItem("mys-ballot-v2")||"null"); if (s && s.r) ballot = s; } catch(e){}
+const saveLocal = () => { try { localStorage.setItem("mys-ballot-v2", JSON.stringify(ballot)); } catch(e){} };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fid = (y,i) => y+"-"+(i+1);
+
+function filmCard(year, i, f){
+  const [title, gross, note, late] = f;
+  const rank = late ? "+" : "#"+(i+1);
+  const scale = k => `<div class="scale" data-k="${k}">${[1,2,3,4,5].map(v=>`<button type="button" data-v="${v}" aria-label="${k==="w"?"World":"Me"} ${v}">${v}</button>`).join("")}</div>`;
+  return `<article class="film" data-id="${fid(year,i)}" style="--acc:${ACC[year]}">
+    <div class="ftop"><div class="rank">${rank}</div>
+      <div class="ftitle"><h3>${esc(title)}</h3><div class="gross">$${gross.toFixed(1)}M${late?" total":""}${note?" · "+esc(note):""}</div></div>
+      <button type="button" class="unseenbtn" aria-pressed="false">Haven't seen</button></div>
+    <div class="row"><div class="lbl">World</div>${scale("w")}</div>
+    <div class="row"><div class="lbl">Me</div>${scale("m")}</div>
+  </article>`;
+}
+for (const y of YEARS){
+  const main = FILMS[y].map((f,i)=>f[3]?"":filmCard(y,i,f)).join("");
+  const late = FILMS[y].map((f,i)=>f[3]?filmCard(y,i,f):"").join("");
+  const nxt = y==="1989" ? `<button class="next" type="button" data-goto="1996">On to 1996 →</button>` : `<button class="next" type="button" data-submit>Done? Submit ballot</button>`;
+  $("#panel-"+y).innerHTML =
+    `<div class="yearhead"><h2 style="color:${ACC[y]}">${y}</h2><p>Top 30 by box office earned in ${y}</p></div>` + main +
+    `<p class="subhead">Late ${y} releases</p>` + late + nxt;
+}
+
+const isDone = id => { const r = ballot.r[id]; return !!(r && (r.w || r.m || r.n)); };
+function paintCard(card){
+  const r = ballot.r[card.dataset.id] || {};
+  card.querySelector(".unseenbtn").setAttribute("aria-pressed", r.n ? "true":"false");
+  card.querySelectorAll(".scale").forEach(sc=>{
+    const k = sc.dataset.k;
+    sc.querySelectorAll("button").forEach(b=>{
+      b.setAttribute("aria-pressed", String(r[k] === +b.dataset.v));
+      b.disabled = !!(r.n && k==="m");
+    });
+  });
+  card.classList.toggle("done", isDone(card.dataset.id));
+}
+function paintProgress(){
+  let total=0;
+  for (const y of YEARS){
+    let c=0; FILMS[y].forEach((_,i)=>{ if (isDone(fid(y,i))) c++; });
+    total+=c; $("#cnt-"+y).textContent = c+"/"+FILMS[y].length;
+    $(y==="1989"?"#m89":"#m96").style.width = (c/TOTAL*100)+"%";
+  }
+  $("#progTxt").innerHTML = `${total} of ${TOTAL} films done`;
+}
+document.querySelectorAll(".film").forEach(paintCard); paintProgress();
+$("#who").value = ballot.name || "";
+
+document.querySelector("main").addEventListener("click", e=>{
+  if (e.target.closest("[data-goto]")) { showTab(e.target.closest("[data-goto]").dataset.goto); return; }
+  if (e.target.closest("[data-submit]")) { openSubmit(); return; }
+  const card = e.target.closest(".film"); if (!card) return;
+  const id = card.dataset.id; const r = Object.assign({}, ballot.r[id]||{});
+  if (e.target.closest(".unseenbtn")){ r.n = !r.n; if (r.n) delete r.m; }
+  else { const b = e.target.closest(".scale button"); if (!b || b.disabled) return;
+    const k = b.closest(".scale").dataset.k, v = +b.dataset.v; if (r[k]===v) delete r[k]; else r[k]=v; }
+  if (!r.n) delete r.n;
+  if (Object.keys(r).length) ballot.r[id]=r; else delete ballot.r[id];
+  paintCard(card); paintProgress(); saveLocal();
+});
+$("#who").addEventListener("input", e=>{ ballot.name = e.target.value.trim().slice(0,40); e.target.classList.remove("bad"); saveLocal(); });
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>showTab(t.dataset.tab)));
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.tab===name)));
+  for (const y of YEARS) $("#panel-"+y).hidden = y!==name;
+  window.scrollTo({top: $("nav.tabs").offsetTop});
+}
+
+// ===== Submit =====
+const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+function yearStats(y){
+  const W=[],M=[]; FILMS[y].forEach((_,i)=>{ const r=ballot.r[fid(y,i)]; if(!r) return; if(r.w) W.push(r.w); if(r.m) M.push(r.m); });
+  const w=mean(W), m=mean(M); return {w, m, all: mean(W.concat(M)), n: W.length+M.length};
+}
+function readable(){
+  const lines=[];
+  for (const y of YEARS){ lines.push("== "+y+" =="); FILMS[y].forEach((f,i)=>{ const r=ballot.r[fid(y,i)];
+    if (!r) return; lines.push(f[0]+": World "+(r.w||"-")+", Me "+(r.n?"not seen":(r.m||"-"))); }); }
+  return lines.join("\n");
+}
+const sheet = $("#sheet"), dlg = $("#dialog");
+function closeDlg(){ dlg.hidden = true; }
+dlg.addEventListener("click", e=>{ if (e.target===dlg || e.target.closest("[data-close]")) closeDlg(); });
+document.addEventListener("keydown", e=>{ if (e.key==="Escape") closeDlg(); });
+$("#submitBtn").addEventListener("click", openSubmit);
+
+function openSubmit(){
+  if (!ballot.name){ $("#who").classList.add("bad"); window.scrollTo({top:0}); $("#who").focus(); return; }
+  const done = Object.keys(ballot.r).length;
+  if (!done){ sheet.innerHTML = `<h2>Nothing rated yet</h2><p>Rate at least a few films first.</p><div class="btnrow"><button class="btn" data-close type="button">OK</button></div>`; dlg.hidden=false; return; }
+  sheet.innerHTML = `<h2>Submit your ballot?</h2>
+    <p>${done} of ${TOTAL} films rated as <b>${esc(ballot.name)}</b>. You can change ratings and submit again later; your latest ballot counts.</p>
+    <div class="btnrow"><button class="btn" id="go" type="button">Submit</button><button class="btn ghost" data-close type="button">Keep rating</button></div>
+    <p class="err" id="err" hidden></p>`;
+  dlg.hidden=false; $("#go").addEventListener("click", send);
+}
+async function send(){
+  const go=$("#go"); go.disabled=true; go.textContent="Sending…";
+  const s89=yearStats("1989"), s96=yearStats("1996");
+  const payload = {
+    _subject: "Movie Showdown ballot: " + ballot.name,
+    _template: "box",
+    name: ballot.name,
+    summary: `1989 avg ${s89.all?.toFixed(2) ?? "-"} (World ${s89.w?.toFixed(2) ?? "-"}, Me ${s89.m?.toFixed(2) ?? "-"}) | 1996 avg ${s96.all?.toFixed(2) ?? "-"} (World ${s96.w?.toFixed(2) ?? "-"}, Me ${s96.m?.toFixed(2) ?? "-"})`,
+    ratings: readable(),
+    ballot_json: JSON.stringify({v:2, name:ballot.name, r:ballot.r, at:new Date().toISOString()})
+  };
+  try {
+    const res = await fetch("https://formsubmit.co/ajax/"+SUBMIT_TO, {method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"}, body:JSON.stringify(payload)});
+    const j = await res.json().catch(()=>({}));
+    if (!res.ok || String(j.success)==="false") throw new Error(j.message || ("HTTP "+res.status));
+    showThanks(s89, s96);
+  } catch(err){
+    go.disabled=false; go.textContent="Try again";
+    const e=$("#err"); e.hidden=false;
+    e.innerHTML = `Couldn't send that (${esc(err.message)}). Check your connection and try again, or copy your ballot and text it to Eric.
+      <br><button class="btn ghost" id="cp" type="button" style="margin-top:8px">Copy my ballot</button><textarea class="code" id="code" readonly hidden></textarea>`;
+    $("#cp").addEventListener("click", ()=>{ const t=$("#code"); t.value=payload.ballot_json; t.hidden=false;
+      (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(()=>{$("#cp").textContent="Copied";}).catch(()=>{t.focus();t.select();}); });
+  }
+}
+function showThanks(s89, s96){
+  const f = v => v==null ? "–" : v.toFixed(2);
+  const lean = s89.all==null||s96.all==null ? "" : s89.all>s96.all ? "You lean <b style='color:var(--y89)'>1989</b>." : s96.all>s89.all ? "You lean <b style='color:var(--y96)'>1996</b>." : "Dead even.";
+  sheet.innerHTML = `<h2>Ballot in. Thanks!</h2><p>${lean} Results coming once everyone votes.</p>
+    <div class="duel"><div class="d89"><small>1989 average</small><b>${f(s89.all)}</b><small>World ${f(s89.w)} · Me ${f(s89.m)}</small></div>
+    <div class="d96"><small>1996 average</small><b>${f(s96.all)}</b><small>World ${f(s96.w)} · Me ${f(s96.m)}</small></div></div>
+    <p class="method">Averages of every rating you gave that year. "Haven't seen" films count only for World.</p>
+    <div class="btnrow"><button class="btn" data-close type="button">Done</button></div>`;
+}
+</script>
+</body>
+</html>
